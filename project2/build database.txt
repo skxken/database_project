@@ -1,0 +1,91 @@
+create table supply_center
+(
+    id integer not null,
+    name varchar not null primary key
+);
+
+create table district
+(
+    constraint district_pk primary key (city_name, country_name),
+    city_name    varchar,
+    country_name varchar not null,
+    main_area    varchar not null references supply_center (name)
+);
+create table  industry
+(
+    name varchar primary key
+);
+create table client_enterprise
+(
+    id integer not null ,
+    client_enterprise_name varchar not null primary key,
+    city                   varchar,
+    country                varchar not null,
+    foreign key (city, country) references district (city_name, country_name),
+    industry    varchar not null references industry(name)
+);
+create table product
+(
+    number varchar primary key,
+    name varchar  not null
+);
+create table model_price
+(
+    id  varchar not null ,
+    model      varchar not null primary key,
+    unit_price integer not null,
+    number  varchar not null references product(number)
+);
+
+create table staff
+(
+    id integer not null ,
+    number varchar(8) unique not null primary key,
+    name   varchar           not null,
+    gender          varchar           not null,
+    age             integer           not null,
+    mobile_phone    varchar           not null,
+    supply_center   varchar not null references supply_center(name),
+    type    varchar not null
+);
+
+create table contract
+(
+    contract_number         varchar(10)        not null unique ,
+    client_enterprise_name  varchar            not null references client_enterprise (client_enterprise_name),
+    contract_date           date               not null,
+    contract_type           varchar,
+    contract_manager    varchar not null
+);
+
+create table detail
+(
+    product_model            varchar         not null  references model_price (model),
+    quantity                integer            not null,
+    salesman_number          varchar(8)         not null references staff (number),
+    contract_number          varchar(10)        not null references contract(contract_number),
+    estimated_delivery_date date               not null,
+    lodgement_date          date
+);
+
+create table supply_center_stock--记录每一条库存变化信息，包括购入、卖出和订单修改
+(
+    supply_center varchar not null references supply_center(name),
+    product_model varchar not null references model_price(model),
+    supply_staff varchar(8) not null references staff(number),
+    date date,
+    purchase_price integer not null,
+    quantity integer not null,--库存增加为正数，库存减少为负数
+    type varchar not null--进货为buy，售出为sell，订单修改为update
+);
+
+drop table supply_center_stock;
+drop table detail;
+drop table contract;
+drop table staff;
+drop table model_price;
+drop table product;
+drop table client_enterprise;
+drop table industry;
+drop table district;
+drop table supply_center;

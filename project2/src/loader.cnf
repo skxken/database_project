@@ -1,0 +1,4 @@
+host = 192.168.0.107
+database = cs307
+user =  checker
+password = 123456
